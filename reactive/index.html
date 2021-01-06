@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reactive</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script src="./reactive.js"></script>
+  <script>
+    const Vue = {
+      createApp(config) {
+        // 模拟编译template
+        const compile = (template) => (content, dom) => {
+          // console.log('render', content.state.message)
+          // 清除所有子dom
+          dom.innerText = ''
+          const input = document.createElement('input')
+          // 事件触发后会失去焦点，因为原来的input已被清除
+          input.addEventListener('change', function () {
+            content.state.message = this.value
+          })
+          // 简易双向绑定
+          input.setAttribute('value', content.state.message)
+          dom.appendChild(input)
+
+          const button = document.createElement('button')
+          button.addEventListener('click', () => {
+            content.click()
+          })
+          button.innerText = content.state.message
+          dom.appendChild(button)
+        }
+
+        //render=(content, dom)=>void
+        const render = compile(config.template)
+
+        return {
+          mount: (container) => {
+            const dom = document.querySelector(container)
+            // setupResult={state, click}
+            const setupResult = config.setup()
+            // 为state添加effect
+            watchEffect(() => render(setupResult, dom))
+            watchEffect(() => {
+              console.log('监听state的变化',setupResult.state.message)
+            })
+          }
+        }
+      }
+    }
+
+    const App = {
+      // 模拟模板，无实际作用
+      template: `
+                <input v-model="message"/>
+                <button @click='click'>{{message}}</button>
+            `,
+      setup() {
+        const state = reactive({
+          message: 'Vue3 reactive!'
+        })
+        const click = () => {
+          state.message = state.message.split('').reverse().join('')
+        }
+
+        return { state, click }
+      },
+    }
+
+    const { createApp } = Vue
+    createApp(App).mount("#app")
+  </script>
+</body>
+
+</html>
