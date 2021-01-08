@@ -4,93 +4,106 @@ const REJECTED = 'rejected'
 
 let i = 0
 
-// 实现简易的promise，实现了单promise函数的简单链式调用：promise().then().catch()
-// 未实现多promise函数的调用：promiseFn1().then(promiseFn2()).then().catch ======>Error
+// enum PromiseState{
+//   PENDING='pending',
+//   FULFILLED='fulfilled',
+//   REJECTED=rejected
+// }
 interface MyPromise {
   state: 'pending' | 'fulfilled' | 'rejected';
   result: any;
-  name: string;
-  onRejected: ((reason?: any) => any)[]
-  onFulfilled: ((result?: any) => any)[]
+  nextFn: MyPromise;
+  name: string
+  onRejected: ((reason?: any) => any) | null;
+  onFulfilled: ((result?: any) => any) | null;
 }
 
 class MyPromise implements MyPromise {
-  constructor(executor: (resolve: (value?: any) => void, reject: (reason?: any) => void) => any, name: string) {
+  constructor(executor: (resolve: (value?: any, that?: MyPromise) => void, reject: (reason?: any, that?: MyPromise) => void) => any, name: string) {
     this.state = PENDING
     this.result = null
-    this.onRejected = []
-    this.onFulfilled = []
+    this.onRejected = null
+    this.onFulfilled = null
+    // 用于测试时区分返回的promise，无实际作用
     this.name = name
 
-    const resolve = (value: any) => {
-      this.state = FULFILLED
-      this.result = value
-      // console.log('resolve->this', this)
-      this.onFulfilled.forEach(fn => this.then(fn))
+    const resolve = (value: any, that?: MyPromise): void => {
+      const _this = that || this
+      _this.state = FULFILLED
+      _this.result = value
+      _this.onFulfilled && _this.then(_this.onFulfilled)
     }
 
-    const reject = (reason: any) => {
-      this.state = REJECTED
-      this.result = reason
-      this.onRejected.forEach(fn => this.catch(fn.bind(this, this.result)))
+    const reject = (reason: any, that?: MyPromise): void => {
+      const _this = that || this
+      _this.state = REJECTED
+      _this.result = reason
+      _this.onRejected && _this.then(undefined,_this.onRejected)
+      // _this.onRejected.forEach(fn => _this.then(undefined, fn))
     }
 
     executor(resolve, reject)
   }
 
-  then(fulfilledFn?: (result?: any) => void, rejectedFn?: (result?: any) => void) {
-    // console.log('this',this)
-    const returnPromise = new MyPromise((resolve) => {
-      switch (this.state) {
-        case 'pending':
-          // console.log('pending')
-          fulfilledFn && this.onFulfilled.push(fulfilledFn)
-          rejectedFn && this.onRejected.push(rejectedFn)
-          // console.log('fulfilledFn',fulfilledFn,this.onFulfilled,this.onFulfilled.length)
-          break
-        case 'fulfilled':
-          // console.log('this','fulfilled')
-          const callbackValue = fulfilledFn && fulfilledFn(this.result)
-          resolve(callbackValue)
-          break
-        case 'rejected':
-          rejectedFn && rejectedFn(this.result)
+  // 异步调用resolve的话then会执行两次，一次pending，一次fulfilled/rejected
+  then(fulfilledFn?: (result?: any) => any, rejectedFn?: (reason?: any) => any) {
+    // 返回一个新的promise，实现链式调用
+    const returnPromise = new MyPromise((resolve, reject) => {
+      try {
+        switch (this.state) {
+          case 'pending':
+            // fulfilledFn && this.onFulfilled.push(fulfilledFn)
+            // rejectedFn && this.onRejected.push(rejectedFn)
+            if (fulfilledFn) {
+              this.onFulfilled = fulfilledFn
+            }
+            if (rejectedFn) {
+              this.onRejected = rejectedFn
+            }
+            break
+          case 'fulfilled':
+            const callbackValue = fulfilledFn && fulfilledFn(this.result)
+            // 用resolve.call(this.nextFn,...)的话resolve函数的this还是会指向新的returnPromise而不是传入promise，故暂时使用参数的方式传递
+            resolve(callbackValue, this.nextFn)//调用下一个promise的then
+            break
+          case 'rejected':
+            rejectedFn && rejectedFn(this.result)
+        }
+      } catch (e) {
+        reject('我是抛出的错误w(ﾟДﾟ)w', this.nextFn)
       }
     }, `函数${i++}`)
-    console.log('<<<<<<<<<<<<<<<<<<<<<<')
-    console.log('this', this)
-    console.log('-------------------------------')
-    console.log('returnPromise', returnPromise)
-    // console.log('returnPromise',returnPromise,fulfilledFn,rejectedFn)
-    console.log('-------------------------------')
-    console.log('fulfilledFn', fulfilledFn, 'rejectedFn', rejectedFn)
-    console.log('>>>>>>>>>>>>>>>>>>>>>>')
-    // console.log('this', this, 'fulfilledFn', fulfilledFn, 'state', this.state)
-    // console.log('returnPromise',returnPromise)
+    if (!this.nextFn) {
+      // 绑定下一个promise函数,如果是异步调用resolve的话第二次调用时会产生一个下的returnPromise，无法拿到传入的回调函数
+      this.nextFn = returnPromise
+    }
     return returnPromise
   }
 
-  catch(rejectedFn: (reason?: any) => void) {
-    switch (this.state) {
-      case 'pending':
-        this.onRejected.push(rejectedFn)
-        break
-      case 'rejected':
-        rejectedFn(this.result)
-        break
-    }
-  }
+  // catch还没想好怎么处理，暂时注释
+  // catch(rejectedFn: (reason?: any) => void) {
+  //   switch (this.state) {
+  //     case 'pending':
+  //       this.onRejected.push(rejectedFn)
+  //       break
+  //     case 'rejected':
+  //       rejectedFn(this.result)
+  //       break
+  //   }
+  // }
 }
 
-const promiseFn = () => new MyPromise((resolve, reject) => {
+const promiseFn = () => new MyPromise((resolve) => {
   setTimeout(() => {
     resolve('test value')
   }, 100);
-}, '函数一')
+}, '函数1')
 
 promiseFn().then((data) => {
   console.log('promiseFn then', data)
-  return 100
-}, () => { }).then((data) => {
-  console.log('promiseFn then2', data)
-})
+  throw new Error()
+}).then((data) => {
+  return 'then2 value'                                                         
+}, (error) => { console.log('捕获到抛出的错误:',error) }).then(data => console.log('then3', data))
+// catch无法工作
+// .catch(() => { console.log('出错了。。。。。。。。。。') })
