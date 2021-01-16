@@ -1,9 +1,7 @@
+// 触发高频事件后n秒内函数只会执行一次，如果n秒内高频事件再次被触发，则重新计算时间
 const debounce = (fn, delay) => {
   let timer = null
   return function () {
-    // if(timer){
-    //   timer=null
-    // }
     clearTimeout(timer)
     timer = setTimeout(() => {
       fn.call(this, ...arguments)
@@ -11,6 +9,7 @@ const debounce = (fn, delay) => {
   }
 }
 
+// 高频事件触发，但在n秒内只会执行一次，所以节流会稀释函数的执行频率
 const throttle = (fn, delay) => {
   let timer = null
 
