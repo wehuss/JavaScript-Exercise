@@ -31,6 +31,16 @@ const productList: ProductList[] = [
     imageUrl: 'https://img10.360buyimg.com/n1/s450x450_jfs/t1/136326/28/8148/72224/5f45fa5eEeca30302/7e3311a2f38d367c.jpg',
     name: '英特尔（Intel）i9-10900KF',
     price: 4000.00
+  },
+  {
+    imageUrl: 'https://img14.360buyimg.com/n1/s450x450_jfs/t1/121696/26/17096/70007/5f9e307bEbf457f1c/3ca325d89f518d63.jpg',
+    name: 'AMD 锐龙7 5700X 处理器',
+    price: 3000.00
+  },
+  {
+    imageUrl: 'https://img12.360buyimg.com/n1/s450x450_jfs/t1/147815/18/12804/68064/5f9e2f25E76d6ebca/c218aad136a6ef4e.jpg',
+    name: 'AMD 锐龙5 3600 处理器',
+    price: 1200.00
   }
 ]
 
