@@ -34,13 +34,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent } from 'vue'
 import shopping from '@/store/modules/shopping'
 export default defineComponent({
   setup() {
-    const productList = shopping.productList
-    const purchaseQuantity = shopping.purchaseQuantity
-    const changePurchaseQuantity = shopping.changePurchaseQuantity
+    const { productList, purchaseQuantity, changePurchaseQuantity } = shopping
 
     return {
       productList,

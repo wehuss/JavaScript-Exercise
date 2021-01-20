@@ -2,11 +2,6 @@ import { MockMethod } from 'vite-plugin-mock'
 import { ProductList } from '../src/types/productList'
 
 const productList: ProductList[] = [
-  // {
-  //   imageUrl: 'https://img11.360buyimg.com/n1/jfs/t1/151244/32/4743/434561/5f9aa570Ed90af142/5a17a266b29e293a.png',
-  //   name: '技嘉 RTX3070 GAMING OC魔鹰',
-  //   price: 4000
-  // },
   {
     imageUrl: 'https://img11.360buyimg.com/n1/jfs/t1/151244/32/4743/434561/5f9aa570Ed90af142/5a17a266b29e293a.png',
     name: '技嘉 RTX3070 GAMING OC魔鹰',
@@ -37,11 +32,6 @@ const productList: ProductList[] = [
     name: '英特尔（Intel）i9-10900KF',
     price: 4000.00
   }
-  // {
-  //   imageUrl: 'https://img11.360buyimg.com/n1/jfs/t1/151244/32/4743/434561/5f9aa570Ed90af142/5a17a266b29e293a.png',
-  //   name: '技嘉 RTX3070 GAMING OC魔鹰',
-  //   price: 4000
-  // }
 ]
 
 export default [
