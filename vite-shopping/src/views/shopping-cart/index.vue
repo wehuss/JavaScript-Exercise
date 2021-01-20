@@ -26,6 +26,7 @@
     />
   </div>
   <div style="height: 55px" />
+  <!--将isSelectAll作为参数传入selectAll方法，如果在selectAll直接调用isSelectAll的话无法正常工作,因为isSelectAll依赖于checkedList,而selectAll方法会改变checkedList-->
   <van-submit-bar :price="totalPrice" button-text="提交订单">
     <van-checkbox
       v-model="isSelectAll"
@@ -57,11 +58,14 @@ export default defineComponent({
       purchaseQuantity: {}
     })
 
+    // 判断购物车是否为空
     const isEmpty = computed(
       () => Object.keys(data.purchaseQuantity).length === 0
     )
 
+    // 判断是否全选
     const isSelectAll = computed(() => {
+      // 如果购物车为空直接返回false
       if (isEmpty.value) {
         return false
       }
@@ -78,6 +82,7 @@ export default defineComponent({
       return _isSelectAll
     })
 
+    // 计算总价
     const totalPrice = computed(() => {
       let _totalPrice = 0
       const { checkedList, purchaseQuantity } = data
@@ -87,9 +92,11 @@ export default defineComponent({
           _totalPrice += purchaseQuantity[key] * productList[key].price
         }
       }
+      // van-submit-bar中price单位为分
       return _totalPrice * 100
     })
 
+    // 全选
     const selectAll = (checked: boolean) => {
       const { checkedList } = data
 
@@ -103,6 +110,7 @@ export default defineComponent({
       const _checkedList: CheckedList = {}
       const _purchaseQuantity = shopping.purchaseQuantity
       for (const key in _purchaseQuantity) {
+        // 进行过滤，只留下数量大于1的
         if (_purchaseQuantity[key] > 0) {
           obj[key] = _purchaseQuantity[key]
           _checkedList[key] = false
