@@ -1,6 +1,7 @@
 {
   "name": "vite-shopping",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "vite+vue3实现的简易购物车",
   "scripts": {
     "dev": "vite",
     "build": "vuedx-typecheck . && vite build"

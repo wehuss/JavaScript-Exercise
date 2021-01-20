@@ -1,14 +1,33 @@
 <template>
   <div>
     <van-card
-      v-for="(product, i) in productList"
-      :key="i"
+      v-for="(product, key) in productList"
+      :key="key"
       :price="product.price"
       :title="product.name"
+      :num="purchaseQuantity[key]"
       :thumb="product.imageUrl"
     >
       <template #footer>
-        <van-button size="mini">加入购物车</van-button>
+        <van-button
+          size="mini"
+          type="primary"
+          @click="
+            changePurchaseQuantity({
+              key,
+            })
+          "
+        >-1</van-button>
+        <van-button
+          size="mini"
+          type="warning"
+          @click="
+            changePurchaseQuantity({
+              key,
+              add: true,
+            })
+          "
+        >+1</van-button>
       </template>
     </van-card>
   </div>
@@ -19,10 +38,14 @@ import { defineComponent, computed } from 'vue'
 import shopping from '@/store/modules/shopping'
 export default defineComponent({
   setup() {
-    const productList = computed(() => shopping.productList)
+    const productList = shopping.productList
+    const purchaseQuantity = shopping.purchaseQuantity
+    const changePurchaseQuantity = shopping.changePurchaseQuantity
 
     return {
-      productList
+      productList,
+      purchaseQuantity,
+      changePurchaseQuantity
     }
   }
 })

@@ -3,3 +3,7 @@ export interface ProductList {
   name: string;
   price: number;
 }
+
+export interface PurchaseQuantity {
+  [key:number]:number
+}

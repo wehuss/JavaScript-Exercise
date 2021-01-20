@@ -48,8 +48,8 @@ export default [
   {
     url: '/api/productList',
     method: 'get',
-    response: ({ body }) => {
-      console.log('body>>>>>>>>', body)
+    response: () => {
+      // console.log('body>>>>>>>>', body)
       return {
         code: 0,
         message: 'ok',
