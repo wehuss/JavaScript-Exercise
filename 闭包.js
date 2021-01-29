@@ -17,5 +17,6 @@ let obj2;
 
 setTimeout(() => {
   obj2 = fn()
+  obj2.a = 3
   console.log(obj1, obj2, obj1 === obj2)
 }, 1000);
