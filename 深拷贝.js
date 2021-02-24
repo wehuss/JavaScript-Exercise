@@ -2,6 +2,12 @@ const depClone = (cloneObj) => {
   if (typeof cloneObj !== 'object') {
     return cloneObj
   }
+
+  // typeof null -> Object
+  if(cloneObj===null){
+    return cloneObj
+  }
+
   // Array instanceof Object -> true
   let copyObj = cloneObj instanceof Array ? [] : {}
 
