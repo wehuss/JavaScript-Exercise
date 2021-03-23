@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mac dock</title>
+  <style>
+    html {
+      font-size: 10px;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
+      align-items: flex-end;
+    }
+
+    .glass {
+      width: 100%;
+      height: 10rem;
+      background: #eee;
+      display: flex;
+      justify-content: center;
+      /* align-items: center; */
+    }
+
+    .dock {
+      --scale: 1;
+      list-style: none;
+      margin: 0;
+      /* padding: 0.5rem; */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dock li {
+      font-size: calc(5rem*var(--scale));
+      padding: 0.5rem;
+      position: relative;
+      top: calc((5rem * var(--scale)- 5rem) /2 * -1);
+      cursor: default;
+      /* 加上动画之后很卡 */
+      /* transition: 15ms all ease-out; */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glass">
+    <ul class="dock">
+      <li>😀</li>
+      <li>😃</li>
+      <li>😄</li>
+      <li>😁</li>
+      <li>😅</li>
+      <li>😆</li>
+      <li>😂</li>
+      <li>🤣</li>
+      <li>🀄️</li>
+      <li>🖥</li>
+      <li>🗽</li>
+      <li>🎮</li>
+      <li>🌎</li>
+      <li>🐻</li>
+    </ul>
+  </div>
+  <script>
+    let li = document.querySelectorAll('.dock li')
+    li.forEach((li) => {
+      li.addEventListener('mousemove', e => {
+        let item = e.target
+        let itemRect = item.getBoundingClientRect()
+        // 计算光标在元素上的偏移量
+        let offset = Math.abs(e.clientX - itemRect.left) / itemRect.width
+        // console.log(offset,offset - 1,Math.abs(offset - 1))
+        // console.log(e.clientX - itemRect.left,Math.abs(e.clientX - itemRect.left))
+        let prev = item.previousElementSibling || null
+        let next = item.nextElementSibling || null
+
+        let scale = 0.6
+        if (prev) {
+          prev.style.setProperty('--scale', 1 + scale * Math.abs(offset - 1))
+        }
+        item.style.setProperty('--scale', 1 + scale)
+        if (next) {
+          next.style.setProperty('--scale', 1 + scale * offset)
+        }
+      })
+      // li.addEventListener('mouselevel')
+    })
+
+    document.querySelector('.dock').addEventListener('mouseleave', () => {
+      resetScale()
+    })
+
+    function resetScale() {
+      li.forEach(li => {
+        li.style.setProperty('--scale', 1)
+      })
+    }
+  </script>
+</body>
+
+</html>
