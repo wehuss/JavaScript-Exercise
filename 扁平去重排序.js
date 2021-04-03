@@ -17,7 +17,7 @@ function sort(array) {
         const arrn = array[n]
         array[i] = arrn
         array[n] = arri
-        break
+        // break
       }
     }
     console.log('count', count)
