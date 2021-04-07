@@ -32,9 +32,9 @@ Object.defineProperty(obj, 'c', {
 
 obj.c = 5
 
-console.log(obj) //无法被修改
+console.log(obj) //c无法被修改
 
-Object.defineProperty(obj, 'd', {
+Object.defineProperty(obj, 'd', { // 设置了get或set后属性将不包含数值
   get() {
     // console.log('this', this)
     return this.e
@@ -44,8 +44,16 @@ Object.defineProperty(obj, 'd', {
   }
 })
 
-console.log(obj.d)
 
 obj.d = [3, 4, 5, 6, 7, 8, 9]
 
 console.log(obj.d)
+
+
+console.log(
+  Object.getOwnPropertyDescriptor(obj,'a'),
+  Object.getOwnPropertyDescriptor(obj,'b'),
+  Object.getOwnPropertyDescriptor(obj,'c'),
+  Object.getOwnPropertyDescriptor(obj,'d'),
+  Object.getOwnPropertyDescriptor(obj,'e'),
+)
